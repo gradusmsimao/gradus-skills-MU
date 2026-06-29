@@ -193,6 +193,20 @@ projeto). Ao confiar na pasta, o marketplace é adicionado e os plugins habilita
 > O `~/.claude/skills/` (modelo junction) só vale a pena para o DEV da sua própria skill (nível 0); aí o atalho
 > é manual (ou um script de install). Para CONSUMIR a do colega, o plugin já resolve sem você tocar em pasta.
 
+### 3.8 Acessar, usar e editar as skills instaladas
+Instalou via plugin? As skills ficam **acessíveis automaticamente** — não precisa mexer em pasta nenhuma:
+- **uso automático**: quando a `description` da skill casa com o que você está fazendo;
+- **uso explícito**: com o namespace do plugin — `/<plugin>:<skill>` (ex.: `/gradus-explore:gradus-explore`);
+- **conferir o que tem**: `/plugin list` (instalados/habilitados); o seletor de skills mostra as de plugin com o prefixo;
+- **ler os arquivos**: existem em disco em `~/.claude/plugins/cache/<mkt>/<plugin>/<versão>/skills/<skill>/SKILL.md`
+  — dá para abrir/inspecionar. Mas **não edite ali**: é cache gerenciado e um `/plugin marketplace update` sobrescreve.
+  Para alterar uma skill, mexa no **repo-fonte** (e, se for sua, no junction de dev do nível 0).
+
+Arquivos soltos num diretório `plugins/` **não** são carregados sozinhos — só viram skills acessíveis após
+`/plugin install` + habilitar. Quem registra é o sistema de plugins, não a pasta.
+> ⚠️ Não instale via plugin uma skill que você já tem por junction (a sua própria): ela apareceria **duas vezes**
+> (pessoal + plugin). Junction = modo DEV (autor); plugin = modo CONSUMO (colega).
+
 ---
 
 ## Parte 4 — Nível 2: marketplace central do time (curado)
