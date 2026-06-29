@@ -73,10 +73,16 @@ Decida o modo no início. Se já existe `.claude/agents/` no projeto → **Modo 
 4. **Regra de ouro da geração:** **NÃO invente número.** Campo não informado fica como `<a preencher>`
    explícito. O headline entra SÓ no `CLAUDE.md` e no `FONTE_DA_VERDADE.md`; os agentes apontam para lá.
 4b. **Provisiona o harness v2** (além da frota + docs):
-   - `git init` + `.gitignore` (ignora dados pesados: raw inputs/, *.parquet, *.xlsx, *.pdf, *.csv, temporários, logs `_audit.log`/`_cost.log`).
-   - Copie `templates/hooks/*.py` → `<projeto>/.claude/hooks/` e registre-os no `<projeto>/.claude/settings.json` (use `templates/settings.json` como base do bloco `hooks`). São 8: path_guard, path_length_guard, destructive_guard (PreToolUse) · audit (PostToolUse) · session_start (SessionStart) · precompact_flush (PreCompact) · stop_gate (Stop) · cost_log (SessionEnd). Calibrados (sem falso-positivo de mensagem de commit; stop_gate silencioso no interativo — supera o caveat antigo do "hook Stop = ruído").
-   - Gere os docs canônicos extras a partir dos templates: `docs/{DECISOES,CATALOGO_BASES,CONVENCAO_PASTAS,RETENCAO_DADOS}.md` + copie `_check_invariants.py` (scripts/) e `_check_organizacao.py` (docs/).
+   - `git init` + `.gitignore` (ignora dados pesados: raw inputs/, *.parquet, *.xlsx, *.pdf, *.csv, temporários, logs `_audit.log`/`_cost.log`, estado do Ralph `.ralph_done`/`.ralph_count`).
+   - Copie `templates/hooks/*.py` → `<projeto>/.claude/hooks/` e registre-os no `<projeto>/.claude/settings.json` (use `templates/settings.json` como base do bloco `hooks`). São 8: path_guard, path_length_guard, destructive_guard (PreToolUse) · audit (PostToolUse) · session_start (SessionStart) · precompact_flush (PreCompact) · stop_gate (Stop) · cost_log (SessionEnd). Calibrados (sem falso-positivo de mensagem de commit; stop_gate silencioso no interativo — supera o caveat antigo do "hook Stop = ruído"; o stop_gate tem **teto** de iterações `CLAUDE_RALPH_MAX` p/ não entrar em loop infinito).
+   - Gere os docs canônicos extras a partir dos templates: `docs/{DECISOES,CATALOGO_BASES,CONVENCAO_PASTAS,RETENCAO_DADOS}.md` + copie `_check_invariants.py` (scripts/) e `_check_organizacao.py` (docs/). **Modo headless:** `settings.headless.json` · `_ralph.py` (→ scripts/) · `MODO_HEADLESS.md` (→ docs/).
    - Adicione o **Skill-map** + o bloco **Harness** ao `CLAUDE.md` (já vêm no template de CLAUDE.md).
+   - **Modo headless/Ralph** (execução autônoma, sem humano no loop): copie `templates/settings.headless.json` →
+     `<projeto>/.claude/` (perfil mínimo: nega exec inline/push/install), `templates/_ralph.py` → `<projeto>/scripts/`
+     (launcher: seta `CLAUDE_HEADLESS=1`, reseta o estado, chama `claude -p … --settings .claude/settings.headless.json`)
+     e `templates/MODO_HEADLESS.md` → `<projeto>/docs/` (contrato de uso). A **parada do loop** já é o `stop_gate`
+     instalado, com teto `CLAUDE_RALPH_MAX` (default 30) e conclusão via `docs/.ralph_done`. **Só ofereça** se o
+     projeto tiver tarefas fechadas e verificáveis (port/execução determinística) — não p/ trabalho exploratório.
 
 5. **Manutenção da fonte da verdade (anti-obsolescência).** O `FONTE_DA_VERDADE.md` gerado já traz a coluna
    **`Proven.`** (🟢 derivado do motor/recalculável · 🟡 conciliação manual · 🔵 externo: baseline
@@ -141,3 +147,5 @@ A `{{LINHA_FRONTEND}}` do CLAUDE.md fica vazia se não houver frontend.
    `settings.json` (bloco `hooks`); os 4 docs extras (`DECISOES`, `CATALOGO_BASES`, `CONVENCAO_PASTAS`,
    `RETENCAO_DADOS`) existem em `docs/`; `_check_invariants.py` em `scripts/`; `_check_organizacao.py` em `docs/`;
    e o `CLAUDE.md` traz o **Skill-map** + o bloco **Harness**.
+7. **Modo headless** (Modo A, se ofertado): `.claude/settings.headless.json`, `scripts/_ralph.py` e
+   `docs/MODO_HEADLESS.md` existem; o `stop_gate.py` instalado tem o teto `CLAUDE_RALPH_MAX` (grep confirma).

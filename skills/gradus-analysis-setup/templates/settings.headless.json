@@ -1,0 +1,61 @@
+{
+  "_comment": "TEMPLATE perfil HEADLESS/Ralph (execucao autonoma, sem humano no loop). Use com scripts/_ralph.py (seta CLAUDE_HEADLESS=1 e --settings .claude/settings.headless.json). DIFERENCA p/ o settings.json interativo: footprint MINIMO + bloco deny do que e perigoso no autonomo. RESTRINJA o allow aos runners do SEU pipeline (ex.: scripts/*.py, tests/*.py) e Write aos SEUS dirs. NAO inclua exec inline (python -c), push nem install — o deny abaixo ja barra; o destructive_guard tambem veta python -c quando CLAUDE_HEADLESS=1. Parada via stop_gate (docs/.ralph_done + teto CLAUDE_RALPH_MAX).",
+  "permissions": {
+    "allow": [
+      "Bash(python -X utf8 scripts/*.py)",
+      "Bash(python -X utf8 tests/*.py)",
+      "Bash(python -X utf8 docs/*.py)",
+      "Bash(python -m py_compile *)",
+      "Write(scripts/*)",
+      "Write(tests/*)",
+      "Write(docs/*)"
+    ],
+    "deny": [
+      "Bash(python -X utf8 -c *)",
+      "Bash(python -c *)",
+      "Bash(node -e *)",
+      "Bash(bash -c *)",
+      "Bash(git push *)",
+      "Bash(pip install *)",
+      "Bash(npm install *)"
+    ],
+    "additionalDirectories": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/path_guard.py\"" },
+          { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/path_length_guard.py\"" }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/destructive_guard.py\"" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit|Bash",
+        "hooks": [
+          { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/audit.py\"" }
+        ]
+      }
+    ],
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start.py\"" } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop_gate.py\"" } ] }
+    ],
+    "SubagentStop": [
+      { "hooks": [ { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop_gate.py\"" } ] }
+    ],
+    "SessionEnd": [
+      { "hooks": [ { "type": "command", "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR/.claude/hooks/cost_log.py\"" } ] }
+    ]
+  }
+}
