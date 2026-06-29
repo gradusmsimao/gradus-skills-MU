@@ -1,6 +1,6 @@
 # SKILLMAP — quando usar o quê
 
-Mapa rápido de decisão entre as 4 skills da biblioteca. Cada uma resolve um momento
+Mapa rápido de decisão entre as 5 skills da biblioteca. Cada uma resolve um momento
 diferente do ciclo de análise; não se sobrepõem.
 
 | Situação | Skill | Gatilho |
@@ -9,6 +9,7 @@ diferente do ciclo de análise; não se sobrepõem.
 | Dois números que **DEVERIAM bater não batem** (escada×escada, base antes×depois, deck antigo×novo, gabarito×base) | **gradus-metric-reconciliation** | "por que esses dois totais divergem?", "valida essa base reconstruída" |
 | **Fim de bloco/sessão** — destilar a conversa em fatos pra próxima sessão não nascer cega | **gradus-session-handoff** | encerrando o trabalho, trocando de tema, contexto ficando longo (pré-compactação) |
 | **Antes de entregar** um número/tabela/slide ao sócio ou cliente | **gradus-qa-checklist** | "pronto pra mandar?", gate leve pré-entrega |
+| **Começar um projeto de análise complexo** — montar a frota de subagents + docs canônicos + harness (hooks/git/verificadores) | **gradus-analysis-setup** | comando explícito `/gradus-analysis-setup` (não dispara por contexto) |
 
 ## Fluxo típico
 
@@ -23,3 +24,4 @@ diferente do ciclo de análise; não se sobrepõem.
 - `gradus-metric-reconciliation` ≠ explorar base nova, ≠ auditoria metodológica ampla, ≠ montar deck.
 - `gradus-qa-checklist` ≠ auditoria metodológica profunda, ≠ revisão visual de PPTX, ≠ gate de render de deck/HTML.
 - `gradus-session-handoff` ≠ injetar contexto no INÍCIO da sessão, ≠ escrever deck.
+- `gradus-analysis-setup` ≠ rodar uma análise pontual (o dono faz direto), ≠ montar deck, ≠ dashboard; só provisiona o andaime/frota/harness, sob comando explícito.

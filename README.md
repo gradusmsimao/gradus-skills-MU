@@ -15,6 +15,7 @@ o Claude Code lê para decidir quando acioná-la) e, quando precisa, uma subpast
 - **gradus-metric-reconciliation** — reconcilia uma métrica que diverge entre fontes e investiga a CAUSA, registrando o número reconciliado no ledger do projeto.
 - **gradus-session-handoff** — ritual de fim de sessão: distila a conversa em FATOS, atualiza estado e captura aprendizados pra próxima sessão não nascer cega.
 - **gradus-qa-checklist** — gate leve de qualidade antes de entregar um número/análise/slide (bate com o ledger? proveniência? premissas? grão/janela? sem dado fabricado?).
+- **gradus-analysis-setup** — provisiona o andaime de um projeto de análise complexa: a frota de subagents (auditora/executora/organizadora/frontend) + os docs canônicos + o **harness v2** (8 hooks de guardrail, settings.json, git, verificadores). Invocada só por `/gradus-analysis-setup`.
 
 Para "quando usar o quê", ver [SKILLMAP.md](SKILLMAP.md).
 
