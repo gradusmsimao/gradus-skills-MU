@@ -51,7 +51,7 @@ def parse_frontmatter(skill_md: pathlib.Path):
 
 
 def run(cmd, cwd=None, check=True):
-    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, errors="replace")  # cmd usa cp850
     if check and r.returncode != 0:
         print(f"  ! falhou: {' '.join(cmd)}\n  stdout: {r.stdout}\n  stderr: {r.stderr}")
         raise SystemExit(r.returncode)
@@ -63,7 +63,7 @@ def repoint_junction(link: pathlib.Path, target: pathlib.Path):
     link.parent.mkdir(parents=True, exist_ok=True)
     if link.is_symlink() or link.exists():
         if IS_WIN:
-            subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True, text=True)
+            subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True, text=True, errors="replace")
         else:
             link.unlink() if link.is_symlink() else shutil.rmtree(link)
     if IS_WIN:
