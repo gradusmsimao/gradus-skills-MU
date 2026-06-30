@@ -12,7 +12,21 @@ Casos:
     registra no marketplace, valida, commit+push, re-aponta o junction p/ o repo.
   - ATUALIZAR (source já é o junction p/ o repo): pula a cópia (a edição já está no repo), re-valida, commit+push.
 """
-import argparse, json, os, shutil, subprocess, sys, pathlib
+import argparse, json, os, shutil, stat, subprocess, sys, pathlib
+
+
+def _rmtree_force(path):
+    """rmtree que limpa o read-only e tenta de novo (Windows deixa arquivos read-only que o rmtree comum não apaga)."""
+    def _onexc(func, p, exc):
+        try:
+            os.chmod(p, stat.S_IWRITE)
+            func(p)
+        except Exception:
+            pass
+    try:
+        shutil.rmtree(path, onexc=_onexc)          # Python 3.12+
+    except TypeError:
+        shutil.rmtree(path, onerror=lambda f, p, e: (_onexc(f, p, e)))  # Python < 3.12
 
 HOME = pathlib.Path.home()
 IS_WIN = os.name == "nt"
@@ -61,14 +75,19 @@ def run(cmd, cwd=None, check=True):
 def repoint_junction(link: pathlib.Path, target: pathlib.Path):
     """re-aponta ~/.claude/skills/<nome> -> target (a pasta da skill no repo). Junction no Windows; symlink no resto."""
     link.parent.mkdir(parents=True, exist_ok=True)
-    if link.is_symlink() or link.exists():
-        if IS_WIN:
-            subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True, text=True, errors="replace")
-        else:
-            link.unlink() if link.is_symlink() else shutil.rmtree(link)
     if IS_WIN:
+        if link.is_symlink() or link.exists():
+            # rmdir remove junction/pasta-vazia; se SOBROU, era dir real não-vazio (conteúdo já copiado p/ o
+            # repo) -> rmtree. Nessa ordem é seguro: se fosse junction, o rmdir já tirou e não chega no rmtree.
+            subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True, text=True, errors="replace")
+            if link.exists():
+                _rmtree_force(link)
         run(["cmd", "/c", "mklink", "/J", str(link), str(target)])
     else:
+        if link.is_symlink():
+            link.unlink()
+        elif link.exists():
+            shutil.rmtree(link)
         link.symlink_to(target, target_is_directory=True)
 
 
