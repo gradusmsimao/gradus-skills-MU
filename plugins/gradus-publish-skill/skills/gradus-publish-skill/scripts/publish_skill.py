@@ -61,19 +61,14 @@ def run(cmd, cwd=None, check=True):
 def repoint_junction(link: pathlib.Path, target: pathlib.Path):
     """re-aponta ~/.claude/skills/<nome> -> target (a pasta da skill no repo). Junction no Windows; symlink no resto."""
     link.parent.mkdir(parents=True, exist_ok=True)
-    if IS_WIN:
-        if link.is_symlink() or link.exists():
-            # rmdir remove junction/pasta-vazia; se SOBROU, era dir real não-vazio (conteúdo já copiado p/ o
-            # repo) -> rmtree. Nessa ordem é seguro: se fosse junction, o rmdir já tirou e não chega no rmtree.
+    if link.is_symlink() or link.exists():
+        if IS_WIN:
             subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True, text=True, errors="replace")
-            if link.exists():
-                shutil.rmtree(link, ignore_errors=True)
+        else:
+            link.unlink() if link.is_symlink() else shutil.rmtree(link)
+    if IS_WIN:
         run(["cmd", "/c", "mklink", "/J", str(link), str(target)])
     else:
-        if link.is_symlink():
-            link.unlink()
-        elif link.exists():
-            shutil.rmtree(link)
         link.symlink_to(target, target_is_directory=True)
 
 
