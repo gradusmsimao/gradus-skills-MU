@@ -27,7 +27,9 @@ python -X utf8 scripts/_ralph.py --dry-run "tarefa"               # só mostra o
 ```
 
 O launcher (`scripts/_ralph.py`): seta `CLAUDE_HEADLESS=1`, **reseta** `docs/.ralph_done` e
-`docs/.ralph_count`, e chama `claude -p "<tarefa>" --settings .claude/settings.headless.json`.
+`docs/.ralph_count`, e chama `claude -p "<tarefa>" --permission-mode acceptEdits --settings .claude/settings.headless.json`.
+
+> ⚠️ **`--permission-mode acceptEdits` é obrigatório**: sem ele o `claude -p` (sem humano) NEGA Write/Edit e a sessão gira até o teto sem produzir nada. Guard-rails seguem ativos (path_guard/deny/destructive_guard). Bash continua preso ao allow → mande rodar SEM `cd` (ex.: `python -X utf8 exploracoes/x.py`).
 
 ## O contrato de parada (hook `stop_gate.py`, Stop/SubagentStop)
 

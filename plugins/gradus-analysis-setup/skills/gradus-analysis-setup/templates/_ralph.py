@@ -67,7 +67,10 @@ def main():
     env.setdefault("CLAUDE_RALPH_MAX", "30")
 
     claude = shutil.which("claude") or "claude"
-    cmd = [claude, "-p", task, "--settings", str(SETTINGS)]
+    # --permission-mode acceptEdits: SEM isto, o headless (-p, sem humano) NEGA Write/Edit -> a sessao nao
+    # consegue nem escrever o script nem o _LOG p/ sinalizar parada, e gira ate o teto a toa. Os guard-rails
+    # seguem ativos: path_guard (so dentro da pasta), deny-list e destructive_guard (veta exec inline/push).
+    cmd = [claude, "-p", task, "--permission-mode", "acceptEdits", "--settings", str(SETTINGS)]
     print(f"[ralph] CLAUDE_HEADLESS=1  CLAUDE_RALPH_MAX={env['CLAUDE_RALPH_MAX']}")
     print(f"[ralph] teto de iteracoes via stop_gate; conclusao via docs/.ralph_done")
     print(f"[ralph] cmd: {claude} -p \"{task[:80]}{'...' if len(task) > 80 else ''}\" --settings .claude/settings.headless.json")
