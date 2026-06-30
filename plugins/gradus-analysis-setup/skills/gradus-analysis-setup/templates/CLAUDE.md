@@ -44,7 +44,7 @@ Antes de informar qualquer número, **consultar `{{FONTE_DA_VERDADE}}`** — tab
 - entregável visual: slide → gradus-consultant-pptx-embed · app → gradus-consultant-frontend · deck → gradus-analysis-storyline · revisar PPTX → gradus-pptx-reviewer
 
 ## Harness (disciplinas)
-Travas universais no ~/.claude/CLAUDE.md (nunca fabricar/citar fonte · ferramenta determinística · invariante na augmentação · só dentro da pasta). Guardrails ativos via hooks (.claude/hooks). git versiona; decisão registrada não se re-litiga.
+Travas universais no ~/.claude/CLAUDE.md (nunca fabricar/citar fonte · ferramenta determinística · invariante na augmentação · só dentro da pasta). Guardrails ativos via hooks (.claude/hooks). git versiona (projeto em OneDrive/sync → `git init --separate-git-dir` p/ disco local; o `.git/` no sync corrompe); decisão registrada não se re-litiga.
 
 ## Estado atual ({{DATA}})
 {{ESTADO_ATUAL}}

@@ -73,7 +73,12 @@ Decida o modo no início. Se já existe `.claude/agents/` no projeto → **Modo 
 4. **Regra de ouro da geração:** **NÃO invente número.** Campo não informado fica como `<a preencher>`
    explícito. O headline entra SÓ no `CLAUDE.md` e no `FONTE_DA_VERDADE.md`; os agentes apontam para lá.
 4b. **Provisiona o harness v2** (além da frota + docs):
-   - `git init` + `.gitignore` (ignora dados pesados: raw inputs/, *.parquet, *.xlsx, *.pdf, *.csv, temporários, logs `_audit.log`/`_cost.log`, estado do Ralph `.ralph_done`/`.ralph_count`).
+   - **git** (rollback/audit). ⚠️ Se o projeto está numa pasta **sincronizada (OneDrive/Dropbox/GDrive)**, use
+     `git init --separate-git-dir=<disco local fora do sync>` — o `.git/` dentro do sync **corrompe** (lock no
+     upload / "conflicted copy" / Files-On-Demand desidrata na rajada de objetos). O working tree segue no sync;
+     só o banco volátil sai (fica um `.git` arquivo-ponteiro). Mais `.gitignore` (ignora dados pesados: raw
+     inputs/, *.parquet, *.xlsx, *.pdf, *.csv, temporários, logs `_audit.log`/`_cost.log`, estado do Ralph
+     `.ralph_done`/`.ralph_count`).
    - Copie `templates/hooks/*.py` → `<projeto>/.claude/hooks/` e registre-os no `<projeto>/.claude/settings.json` (use `templates/settings.json` como base do bloco `hooks`). São 8: path_guard, path_length_guard, destructive_guard (PreToolUse) · audit (PostToolUse) · session_start (SessionStart) · precompact_flush (PreCompact) · stop_gate (Stop) · cost_log (SessionEnd). Calibrados (sem falso-positivo de mensagem de commit; stop_gate silencioso no interativo — supera o caveat antigo do "hook Stop = ruído"; o stop_gate tem **teto** de iterações `CLAUDE_RALPH_MAX` p/ não entrar em loop infinito).
    - Gere os docs canônicos extras a partir dos templates: `docs/{DECISOES,CATALOGO_BASES,CONVENCAO_PASTAS,RETENCAO_DADOS}.md` + copie `_check_invariants.py` (scripts/) e `_check_organizacao.py` (docs/). **Modo headless:** `settings.headless.json` · `_ralph.py` (→ scripts/) · `MODO_HEADLESS.md` (→ docs/).
    - Adicione o **Skill-map** + o bloco **Harness** ao `CLAUDE.md` (já vêm no template de CLAUDE.md).
